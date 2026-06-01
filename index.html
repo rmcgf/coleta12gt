@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Coleta Fadiga FAB · 1º/2º GT</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #0a0e1a;
+  --bg2:      #0f1528;
+  --bg3:      #141c35;
+  --green:    #00FF88;
+  --green-dim:#00cc6a;
+  --amber:    #FFB300;
+  --amber-dim:#cc8f00;
+  --blue:     #4FC3F7;
+  --red:      #FF4444;
+  --text:     #e0e8ff;
+  --text-dim: #7a8ab0;
+  --border:   rgba(0,255,136,0.25);
+  --glow:     0 0 12px rgba(0,255,136,0.35);
+  --glow-amber: 0 0 12px rgba(255,179,0,0.4);
+  --font-title: 'Orbitron', monospace;
+  --font-data:  'Share Tech Mono', monospace;
+  --font-body:  'Exo 2', sans-serif;
+}
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    radial-gradient(circle, rgba(0,255,136,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+#app { position: relative; z-index: 1; min-height: 100vh; }
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeIn   { from { opacity:0 } to { opacity:1 } }
+@keyframes slideUp  { from { opacity:0; transform:translateY(24px) } to { opacity:1; transform:translateY(0) } }
+@keyframes pulse    { 0%,100% { opacity:1 } 50% { opacity:0.5 } }
+@keyframes scanline { 0% { top:-4px } 100% { top:100% } }
+@keyframes glow-pulse { 0%,100%{ box-shadow:var(--glow) } 50%{ box-shadow:0 0 24px rgba(0,255,136,0.6) } }
+
+.fade-in  { animation: fadeIn  0.4s ease forwards; }
+.slide-up { animation: slideUp 0.4s ease forwards; }
+
+/* ─── LAYOUT CONTAINERS ─── */
+.screen {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--glow);
+  margin-bottom: 16px;
+}
+.card-amber {
+  border-color: rgba(255,179,0,0.35);
+  box-shadow: var(--glow-amber);
+}
+
+/* ─── HEADER ─── */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.app-header .logo {
+  font-family: var(--font-title);
+  font-size: 13px;
+  color: var(--green);
+  line-height: 1.3;
+  flex: 1;
+}
+.app-header .pilot-id {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--amber);
+  background: rgba(255,179,0,0.1);
+  border: 1px solid rgba(255,179,0,0.3);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar-wrap {
+  margin-bottom: 20px;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.progress-track {
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 8px rgba(0,255,136,0.6);
+}
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: var(--font-title);
+  font-size: 14px;
+  color: var(--green);
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  background: var(--green);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--green);
+}
+.section-subtitle {
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--blue);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* ─── FORM ELEMENTS ─── */
+.field-group { margin-bottom: 18px; }
+.field-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.field-label .required { color: var(--green); margin-left: 2px; }
+
+input[type="number"], input[type="text"], input[type="time"], textarea, select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid rgba(79,195,247,0.25);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: 15px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="number"]:focus, input[type="text"]:focus,
+input[type="time"]:focus, textarea:focus, select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 8px rgba(0,255,136,0.2);
+}
+input[type="number"]::placeholder, input[type="text"]::placeholder,
+textarea::placeholder { color: var(--text-dim); opacity: 0.6; }
+textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+select option { background: var(--bg3); }
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.input-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+/* ─── RADIO / CHECKBOX OPTIONS ─── */
+.options-list { display: flex; flex-direction: column; gap: 8px; }
+.options-row  { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.opt-btn {
+  display: block;
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid rgba(79,195,247,0.2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 11px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+.opt-btn:hover  { border-color: var(--green); background: rgba(0,255,136,0.05); }
+.opt-btn.active { border-color: var(--green); background: rgba(0,255,136,0.12); color: #fff; box-shadow: 0 0 8px rgba(0,255,136,0.25); }
+
+.opt-btn-sm {
+  flex: 0 0 auto;
+  background: var(--bg3);
+  border: 1px solid rgba(79,195,247,0.2);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: 13px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.opt-btn-sm:hover  { border-color: var(--green); background: rgba(0,255,136,0.05); }
+.opt-btn-sm.active { border-color: var(--green); background: rgba(0,255,136,0.15); color: var(--green); }
+
+/* ─── SCALE (KSS/SPS/NASA-TLX) ─── */
+.scale-container { margin-top: 6px; }
+.scale-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 6px;
+}
+.scale-item:hover  { background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.2); }
+.scale-item.active { background: rgba(0,255,136,0.12); border-color: var(--green); box-shadow: 0 0 8px rgba(0,255,136,0.2); }
+.scale-num {
+  font-family: var(--font-data);
+  font-size: 18px;
+  color: var(--green);
+  min-width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+  font-weight: bold;
+}
+.scale-item.active .scale-num { color: var(--green); text-shadow: 0 0 8px var(--green); }
+.scale-desc { font-size: 13px; color: var(--text-dim); line-height: 1.4; }
+.scale-item.active .scale-desc { color: var(--text); }
+
+/* ─── NASA-TLX SLIDER ─── */
+.tlx-dimension { margin-bottom: 24px; }
+.tlx-dim-name {
+  font-family: var(--font-title);
+  font-size: 12px;
+  color: var(--amber);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.tlx-dim-question {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+.tlx-scale-wrap { position: relative; }
+.tlx-poles {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.tlx-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--bg3);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  border: 1px solid rgba(255,179,0,0.2);
+}
+.tlx-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 8px rgba(255,179,0,0.6);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+}
+.tlx-slider::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 8px rgba(255,179,0,0.6);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+}
+.tlx-value-display {
+  text-align: center;
+  font-family: var(--font-data);
+  font-size: 22px;
+  color: var(--amber);
+  margin-top: 6px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255,179,0,0.5);
+}
+.tlx-not-set { color: var(--text-dim); font-size: 14px; }
+
+/* ─── BUTTONS ─── */
+.btn-primary {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, var(--green), var(--green-dim));
+  color: #0a0e1a;
+  font-family: var(--font-title);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 0 16px rgba(0,255,136,0.4);
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.btn-primary:hover   { box-shadow: 0 0 24px rgba(0,255,136,0.6); transform: translateY(-1px); }
+.btn-primary:active  { transform: translateY(0); }
+.btn-primary:disabled {
+  background: var(--bg3);
+  color: var(--text-dim);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-amber {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, var(--amber), var(--amber-dim));
+  color: #0a0e1a;
+  font-family: var(--font-title);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: var(--glow-amber);
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.btn-amber:hover { box-shadow: 0 0 24px rgba(255,179,0,0.6); transform: translateY(-1px); }
+.btn-ghost {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
+.btn-secondary {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: var(--blue);
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 12px;
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--green); color: var(--green); box-shadow: 0 0 16px rgba(79,195,247,0.3); }
+
+/* ─── TOAST ─── */
+#toast {
+  position: fixed;
+  top: 16px; left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: rgba(255,100,0,0.95);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  z-index: 9999;
+  transition: transform 0.3s ease;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ─── MOMENT CARDS (HOME) ─── */
+.moment-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: var(--glow);
+  transition: all 0.2s;
+}
+.moment-card.locked {
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: none;
+  opacity: 0.6;
+}
+.moment-card.done {
+  border-color: rgba(0,255,136,0.4);
+  background: rgba(0,255,136,0.04);
+}
+.moment-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.moment-number {
+  font-family: var(--font-data);
+  font-size: 28px;
+  color: var(--green);
+  font-weight: bold;
+  min-width: 32px;
+}
+.moment-card.locked .moment-number { color: var(--text-dim); }
+.moment-card.done .moment-number { color: var(--green); }
+.moment-title {
+  font-family: var(--font-title);
+  font-size: 11px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+.moment-status {
+  margin-left: auto;
+  font-size: 18px;
+}
+.moment-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.moment-done-info {
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--green);
+  background: rgba(0,255,136,0.08);
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+.locked-info {
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ─── PAUSE SCREEN ─── */
+.pause-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 30px 16px;
+}
+.pause-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: pulse 2s ease-in-out infinite;
+}
+.pause-title {
+  font-family: var(--font-title);
+  font-size: 18px;
+  color: var(--amber);
+  margin-bottom: 8px;
+  text-shadow: 0 0 12px rgba(255,179,0,0.5);
+}
+.pause-subtitle {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.procedure-list {
+  background: var(--bg3);
+  border: 1px solid rgba(255,179,0,0.2);
+  border-radius: 10px;
+  padding: 16px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 24px;
+}
+.procedure-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.procedure-item:last-child { border-bottom: none; }
+.procedure-num {
+  font-family: var(--font-data);
+  font-size: 16px;
+  color: var(--amber);
+  min-width: 24px;
+  font-weight: bold;
+}
+
+/* ─── TIMER ─── */
+.timer-display {
+  font-family: var(--font-data);
+  font-size: 48px;
+  color: var(--green);
+  text-shadow: 0 0 20px rgba(0,255,136,0.6);
+  margin: 12px 0;
+  letter-spacing: 4px;
+}
+.timer-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.timer-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: var(--bg3);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.timer-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  border-radius: 3px;
+  transition: width 1s linear;
+  box-shadow: 0 0 8px rgba(0,255,136,0.6);
+}
+
+/* ─── SUCCESS / DONE ─── */
+.success-icon {
+  font-size: 72px;
+  text-align: center;
+  margin: 20px 0 16px;
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+.success-title {
+  font-family: var(--font-title);
+  font-size: 20px;
+  color: var(--green);
+  text-align: center;
+  margin-bottom: 8px;
+  text-shadow: 0 0 16px rgba(0,255,136,0.5);
+}
+.success-msg {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* ─── ERROR SCREEN ─── */
+.error-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 24px;
+}
+.error-icon { font-size: 64px; margin-bottom: 16px; }
+.error-title {
+  font-family: var(--font-title);
+  font-size: 18px;
+  color: var(--red);
+  margin-bottom: 12px;
+  text-shadow: 0 0 12px rgba(255,68,68,0.4);
+}
+.error-msg { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+/* ─── TCLE ─── */
+.tcle-body {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 6px;
+  margin-bottom: 20px;
+}
+.tcle-body::-webkit-scrollbar { width: 4px; }
+.tcle-body::-webkit-scrollbar-track { background: var(--bg3); }
+.tcle-body::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 2px; }
+.tcle-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.tcle-section:last-child { border-bottom: none; }
+.tcle-section-title {
+  font-family: var(--font-title);
+  font-size: 10px;
+  color: var(--blue);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.tcle-section p { margin-bottom: 8px; }
+.tcle-section ul { padding-left: 16px; }
+.tcle-section li { margin-bottom: 4px; }
+.tcle-scroll-hint {
+  text-align: center;
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--amber);
+  margin-bottom: 8px;
+  animation: pulse 2s infinite;
+}
+
+/* ─── FOOTER ─── */
+.app-footer {
+  text-align: center;
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: auto;
+  padding-top: 24px;
+  opacity: 0.5;
+}
+
+/* ─── DIVIDER ─── */
+.divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  margin: 16px 0;
+}
+
+/* ─── INLINE INFO BOX ─── */
+.info-box {
+  background: rgba(79,195,247,0.07);
+  border: 1px solid rgba(79,195,247,0.2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--blue);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.info-box-amber {
+  background: rgba(255,179,0,0.07);
+  border-color: rgba(255,179,0,0.2);
+  color: var(--amber);
+}
+
+/* ─── OFFLINE BANNER ─── */
+#offline-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(255,100,0,0.92);
+  color: #fff;
+  font-family: var(--font-data);
+  font-size: 12px;
+  text-align: center;
+  padding: 10px;
+  z-index: 9998;
+  display: none;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 360px) {
+  .input-row { grid-template-columns: 1fr; }
+  .input-row-3 { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+<div id="offline-banner">⚡ Sem conexão — dados serão enviados ao reconectar</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+   CONFIGURAÇÃO — editar conforme necessário
+   ═══════════════════════════════════════════════════════ */
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyLKRcBS5Hj1sI4RIpP7X8fUvdMDdrR27kvjjA1IQQUf-GNc1q-Aq5ESMzwK20tE8yO/exec';
+
+const TOKENS = {
+  'Rph7Kx':'P001','mTq3Nw':'P002','Jv9sLp':'P003',
+  'bXc4Ym':'P004','nFd8Wr':'P005','Ek2tAz':'P006',
+  'Gs5uBo':'P007','Hj6vCi':'P008','Lk1wDe':'P009',
+  'Mn0xEf':'P010','Op3yFg':'P011','Pq4zGh':'P012',
+  'Qr5aHi':'P013','Rs6bIj':'P014','St7cJk':'P015',
+  'Tu8dKl':'P016','Uv9eLm':'P017','Vw0fMn':'P018',
+  'Wx1gNo':'P019','Xy2hOp':'P020','Yz3iPq':'P021',
+  'Za4jQr':'P022','Ab5kRs':'P023','Bc6lSt':'P024',
+  'Cd7mTu':'P025','De8nUv':'P026','Ef9oVw':'P027',
+  'Fg0pWx':'P028','Gh1qXy':'P029','Hi2rYz':'P030'
+};
+
+/* ═══════════════════════════════════════════════════════
+   ESTADO GLOBAL
+   ═══════════════════════════════════════════════════════ */
+let TOKEN = null;
+let PARTICIPANT = null;
+let STATE = null;
+
+function stateKey() { return `fadiga_${TOKEN}_state`; }
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(stateKey());
+    if (raw) return JSON.parse(raw);
+  } catch(_) {}
+  return {
+    m1: { status:'pending', step:0, data:{}, startTs:null },
+    m2: { status:'pending', step:0, data:{}, startTs:null },
+    m3: { status:'pending', step:0, data:{}, startTs:null }
+  };
+}
+
+function saveState() {
+  try { localStorage.setItem(stateKey(), JSON.stringify(STATE)); } catch(_) {}
+}
+
+/* ═══════════════════════════════════════════════════════
+   ROUTER / BOOT
+   ═══════════════════════════════════════════════════════ */
+function boot() {
+  const params = new URLSearchParams(window.location.search);
+  TOKEN = params.get('t') || null;
+
+  if (!TOKEN || !TOKENS[TOKEN]) {
+    renderError(); return;
+  }
+  PARTICIPANT = TOKENS[TOKEN];
+  STATE = loadState();
+  renderHome();
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════════ */
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER HELPERS
+   ═══════════════════════════════════════════════════════ */
+function setApp(html) {
+  document.getElementById('app').innerHTML = html;
+}
+
+function header() {
+  return `<div class="app-header">
+    <div class="logo">✈ 1º/2º GT · FAB<br><span style="color:var(--text-dim);font-size:10px;font-family:var(--font-data)">COLETA FADIGA</span></div>
+    <div class="pilot-id">${PARTICIPANT}</div>
+  </div>`;
+}
+
+function progressBar(step, total, label) {
+  const pct = Math.round((step / total) * 100);
+  return `<div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span>${label || ''}</span>
+      <span>ETAPA ${step}/${total}</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+function footer() {
+  return `<div class="app-footer">Raphael Filgueiras · UNIFA · v1.0</div>`;
+}
+
+function backButton(mId) {
+  if (STATE[mId].step > 0) {
+    return `<button class="btn-secondary" onclick="backStep('${mId}')">← VOLTAR</button>`;
+  }
+  return '';
+}
+
+/* ═══════════════════════════════════════════════════════
+   TELA: ERRO DE TOKEN
+   ═══════════════════════════════════════════════════════ */
+function renderError() {
+  setApp(`<div class="error-screen fade-in">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title">ACESSO NÃO AUTORIZADO</div>
+    <div class="error-msg">
+      Este link não é válido ou não foi reconhecido.<br><br>
+      Entre em contato com o pesquisador:<br>
+      <strong style="color:var(--amber)">filgueirasrmcgf@fab.mil.br</strong><br>
+      <strong style="color:var(--amber)">(21) 98335-7268</strong>
+    </div>
+  </div>`);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TELA: HOME
+   ═══════════════════════════════════════════════════════ */
+function renderHome() {
+  const m = STATE;
+  const cards = [
+    { id:'m1', n:'01', title:'DIA SEM VOO', sub:'Baseline — Caracterização + IPAQ + VFC/PVT + Escalas',
+      desc:'Questionários de caracterização e atividade física, coleta fisiológica e escalas de fadiga/sonolência. ~20 min.' },
+    { id:'m2', n:'02', title:'ANTES DO PRÉ-VOO', sub:'Dia do voo — Pré-Missão + VFC/PVT + Escalas',
+      desc:'Questionário pré-missão, coleta fisiológica e escalas. ~15 min.' },
+    { id:'m3', n:'03', title:'APÓS O PRÉ-VOO', sub:'Antes de acionar motores — VFC/PVT + NASA-TLX + Escalas',
+      desc:'Coleta fisiológica, NASA-TLX e escalas de fadiga/sonolência. ~15 min.' }
+  ];
+
+  let html = `<div class="screen fade-in">${header()}
+    <div class="section-title">MISSÃO DE COLETA</div>`;
+
+  cards.forEach((c, i) => {
+    const st = m[c.id];
+    const prev = i === 0 ? null : m[cards[i-1].id];
+    const locked = i > 0 && prev.status !== 'done';
+    const done   = st.status === 'done';
+
+    let statusIcon = locked ? '🔒' : done ? '✅' : '▶️';
+    let cardClass  = locked ? 'locked' : done ? 'done' : '';
+    let bottom = '';
+
+    if (done) {
+      const ts = st.endTs ? new Date(st.endTs).toLocaleString('pt-BR') : '';
+      bottom = `<div class="moment-done-info">✔ Concluído em ${ts}</div>`;
+    } else if (locked) {
+      bottom = `<div class="locked-info">🔒 Disponível após concluir Momento ${i}</div>`;
+    } else {
+      bottom = `<button class="btn-primary" onclick="startMoment('${c.id}')">▶ INICIAR MOMENTO ${c.n}</button>`;
+    }
+
+    html += `<div class="moment-card ${cardClass}">
+      <div class="moment-card-header">
+        <div class="moment-number">${c.n}</div>
+        <div>
+          <div class="moment-title">${c.title}</div>
+          <div style="font-family:var(--font-data);font-size:10px;color:var(--text-dim);margin-top:2px">${c.sub}</div>
+        </div>
+        <div class="moment-status">${statusIcon}</div>
+      </div>
+      <div class="moment-desc">${c.desc}</div>
+      ${bottom}
+    </div>`;
+  });
+
+  html += `${footer()}</div>`;
+  setApp(html);
+}
+
+function startMoment(mId) {
+  const s = STATE[mId];
+  if (!s.startTs) { s.startTs = new Date().toISOString(); saveState(); }
+  renderStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   DEFINIÇÃO DOS PASSOS POR MOMENTO
+   ═══════════════════════════════════════════════════════ */
+const STEPS = {
+  m1: ['tcle','caract','ipaq','pausa','kss','sps','obs'],
+  m2: ['premissao_a','premissao_b','pausa','kss','sps','obs'],
+  m3: ['pausa','nasatlx','kss','sps','obs']
+};
+
+const STEP_LABELS = {
+  tcle:'TCLE', caract:'CARACTERIZAÇÃO', ipaq:'IPAQ',
+  pausa:'PAUSA VFC+PVT', kss:'KSS', sps:'SPS', obs:'OBSERVAÇÕES',
+  premissao_a:'PRÉ-MISSÃO A', premissao_b:'PRÉ-MISSÃO B', nasatlx:'NASA-TLX'
+};
+
+function renderStep(mId) {
+  const steps = STEPS[mId];
+  const stepIdx = STATE[mId].step;
+  const stepId  = steps[stepIdx];
+  const total   = steps.length;
+
+  const renderers = {
+    tcle: () => renderTCLE(mId),
+    caract: () => renderCaract(mId),
+    ipaq: () => renderIPAQ(mId),
+    pausa: () => renderPausa(mId, stepIdx, total),
+    kss: () => renderKSS(mId, stepIdx, total),
+    sps: () => renderSPS(mId, stepIdx, total),
+    obs: () => renderObs(mId, stepIdx, total),
+    premissao_a: () => renderPremissaoA(mId),
+    premissao_b: () => renderPremissaoB(mId),
+    nasatlx: () => renderNASATLX(mId)
+  };
+
+  if (renderers[stepId]) renderers[stepId]();
+  else advanceStep(mId);
+}
+
+function advanceStep(mId) {
+  const steps = STEPS[mId];
+  STATE[mId].step++;
+  saveState();
+  if (STATE[mId].step >= steps.length) {
+    completeMoment(mId);
+  } else {
+    renderStep(mId);
+  }
+}
+
+function backStep(mId) {
+  if (STATE[mId].step > 0) {
+    STATE[mId].step--;
+    saveState();
+    renderStep(mId);
+  }
+}
+
+function collectFormData(mId, fields) {
+  const data = STATE[mId].data;
+  fields.forEach(f => {
+    const el = document.getElementById(f);
+    if (el) data[f] = el.value;
+  });
+  saveState();
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: TCLE
+   ═══════════════════════════════════════════════════════ */
+function renderTCLE(mId) {
+  const steps = STEPS[mId];
+  const stepIdx = STATE[mId].step;
+  const total = steps.length;
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'TCLE')}
+    <div class="section-title">TCLE</div>
+    <div class="card">
+      <div class="section-subtitle">TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO</div>
+      <div class="tcle-scroll-hint">↕ Role para ler o documento completo</div>
+      <div class="tcle-body" id="tcle-scroll">
+
+        <div class="tcle-section">
+          <div class="tcle-section-title">Identificação da Pesquisa</div>
+          <p><strong>Título:</strong> Análise da fadiga psicofisiológica durante a fase de pré-voo em pilotos do Primeiro Esquadrão do Segundo Grupo de Transporte da Força Aérea Brasileira.</p>
+          <p><strong>Pesquisador Responsável:</strong> Cap Av Filgueiras</p>
+          <p><strong>Orientador:</strong> Prof. Dr. Fabio Angioluci Diniz Campos</p>
+          <p><strong>Instituição:</strong> UNIFA / Programa de Pós-Graduação em Desempenho Humano Operacional</p>
+        </div>
+
+        <div class="tcle-section">
+          <p>Prezado Piloto, você está sendo convidado a participar como voluntário da pesquisa detalhada acima. Este documento contém todas as informações necessárias sobre o estudo. Leia-o com atenção e, caso tenha qualquer dúvida, não hesite em perguntar ao pesquisador. Sua participação não é obrigatória. Esta pesquisa segue os princípios éticos de autonomia, beneficência, não maleficência e justiça, em conformidade com a Resolução nº 466/2012 do Conselho Nacional de Saúde.</p>
+        </div>
+
+        <div class="tcle-section">
+          <div class="tcle-section-title">1. Justificativa, Objetivos e Procedimentos</div>
+          <p>Este estudo busca compreender como a complexidade das atividades realizadas na fase de pré-voo impacta o estado de fadiga psicofisiológica dos pilotos, gerando conhecimento que possa contribuir para o aprimoramento da segurança operacional e do bem-estar dos tripulantes.</p>
+          <p>Caso decida participar, sua colaboração ocorrerá em três etapas:</p>
+          <ul>
+            <li><strong>Etapa 1 (Dia sem voo):</strong> Questionário de Caracterização + IPAQ + coleta VFC (Polar H10, 4 min) + PVT + KSS + SPS. ~20 min.</li>
+            <li><strong>Etapa 2 (Dia do voo, antes do pré-voo):</strong> Questionário Pré-Missão + coleta VFC + PVT + KSS + SPS. ~15 min.</li>
+            <li><strong>Etapa 3 (Após o pré-voo, antes de acionar motores):</strong> Coleta VFC + PVT + NASA-TLX + KSS + SPS. ~15 min.</li>
+          </ul>
+        </div>
+
+        <div class="tcle-section">
+          <div class="tcle-section-title">2. Riscos e Desconfortos</div>
+          <p>Os riscos são mínimos. Possibilidade de leve desconforto físico da cinta peitoral, leve ansiedade nos testes cognitivos, e pequena carga mental adicional. Você pode interromper qualquer procedimento a qualquer momento.</p>
+        </div>
+
+        <div class="tcle-section">
+          <div class="tcle-section-title">3. Benefícios</div>
+          <p>Os benefícios são principalmente indiretos: subsídios para refinamento de doutrinas sobre jornada de trabalho e gerenciamento da fadiga na FAB, e contribuição para a ciência de fatores humanos na aviação em ambiente operacional real.</p>
+        </div>
+
+        <div class="tcle-section">
+          <div class="tcle-section-title">4. Confidencialidade e Privacidade</div>
+          <p>Seu nome não será divulgado em nenhuma fase da pesquisa. Será utilizado um código de identificação para garantir o anonimato. Os dados serão armazenados em computador protegido por senha, com acesso restrito ao pesquisador e seu orientador.</p>
+        </div>
+
+        <div class="tcle-section">
+          <div class="tcle-section-title">5. Voluntariedade</div>
+          <p>Sua participação é totalmente voluntária. Você tem o direito de se recusar a participar ou de retirar seu consentimento a qualquer momento, sem que isso acarrete qualquer tipo de prejuízo, penalidade ou constrangimento em seu ambiente profissional.</p>
+        </div>
+
+        <div class="tcle-section">
+          <div class="tcle-section-title">6. Contatos</div>
+          <p><strong>Pesquisador:</strong> filgueirasrmcgf@fab.mil.br · (21) 98335-7268</p>
+          <p><strong>CEP/HFAG:</strong> Estrada do Galeão, 4101 — Ilha do Governador, RJ · (21) 2468-5358</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card" id="tcle-aceite-card">
+      <div class="section-subtitle">CONSENTIMENTO DE PARTICIPAÇÃO</div>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:14px;line-height:1.5">
+        Após a leitura, indique sua decisão:
+      </p>
+      <div class="options-list" id="tcle-opts">
+        <button class="opt-btn" id="tcle-sim" onclick="selectTCLE('sim')">
+          ✔ Concordo em participar voluntariamente desta pesquisa
+        </button>
+        <button class="opt-btn" id="tcle-nao" onclick="selectTCLE('nao')">
+          ✘ Não concordo — encerrar minha participação
+        </button>
+      </div>
+    </div>
+
+    ${backButton(mId)}
+    <button class="btn-primary" id="btn-tcle" onclick="submitTCLE('${mId}')" disabled>CONFIRMAR E CONTINUAR</button>
+    ${footer()}
+  </div>`);
+}
+
+let _tcleChoice = null;
+function selectTCLE(v) {
+  _tcleChoice = v;
+  document.getElementById('tcle-sim').classList.toggle('active', v==='sim');
+  document.getElementById('tcle-nao').classList.toggle('active', v==='nao');
+  document.getElementById('btn-tcle').disabled = false;
+}
+function submitTCLE(mId) {
+  if (!_tcleChoice) { showToast('Selecione uma opção antes de continuar.'); return; }
+  if (_tcleChoice === 'nao') {
+    setApp(`<div class="screen fade-in">
+      ${header()}
+      <div class="card" style="text-align:center;margin-top:40px">
+        <div style="font-size:48px;margin-bottom:16px">🛑</div>
+        <div class="section-title" style="justify-content:center;color:var(--amber)">PARTICIPAÇÃO ENCERRADA</div>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.6">
+          Sua decisão foi registrada. Você não está participando desta pesquisa.<br><br>
+          Obrigado pela atenção. Caso mude de ideia, entre em contato com o pesquisador:<br>
+          <strong style="color:var(--amber)">filgueirasrmcgf@fab.mil.br</strong>
+        </p>
+      </div>
+    </div>`);
+    return;
+  }
+  STATE[mId].data['m1_tcle_aceite'] = 'Sim';
+  saveState();
+  _tcleChoice = null;
+  advanceStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: CARACTERIZAÇÃO
+   ═══════════════════════════════════════════════════════ */
+function renderCaract(mId) {
+  const steps = STEPS[mId];
+  const stepIdx = STATE[mId].step;
+  const total = steps.length;
+  const d = STATE[mId].data;
+
+  const postos = [['2T','2º Tenente'],['1T','1º Tenente'],['CP','Capitão'],['MJ','Major'],['TC','Tenente-Coronel']];
+  const quals  = [['AL','Aluno'],['PB','Piloto Básico'],['PO','Piloto Operacional'],['IN','Instrutor']];
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'CARACTERIZAÇÃO')}
+    <div class="section-title">CARACTERIZAÇÃO DA AMOSTRA</div>
+
+    <div class="info-box">Prezado piloto, responda com a maior precisão possível. Informações confidenciais, usadas apenas para fins de pesquisa.</div>
+
+    <div class="card">
+      <div class="section-subtitle">PARTE 1 — INFORMAÇÕES GERAIS E EXPERIÊNCIA DE VOO</div>
+
+      <div class="field-group">
+        <label class="field-label">Idade <span class="required">*</span></label>
+        <input type="number" id="m1_idade" min="18" max="70" placeholder="anos" value="${d.m1_idade||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Gênero <span class="required">*</span></label>
+        <div class="options-row" id="genero-opts">
+          ${['Masculino','Feminino'].map(g=>`<button class="opt-btn-sm ${d.m1_genero===g?'active':''}" onclick="selectOpt('genero-opts','m1_genero','${g}',this)">${g}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m1_genero" value="${d.m1_genero||''}">
+      </div>
+
+      <div class="input-row">
+        <div class="field-group">
+          <label class="field-label">Peso <span class="required">*</span></label>
+          <input type="number" id="m1_peso" min="40" max="200" placeholder="kg" value="${d.m1_peso||''}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Altura <span class="required">*</span></label>
+          <input type="number" id="m1_altura" min="140" max="220" placeholder="cm" value="${d.m1_altura||''}">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Posto / Graduação <span class="required">*</span></label>
+        <div class="options-row" id="posto-opts">
+          ${postos.map(([v,l])=>`<button class="opt-btn-sm ${d.m1_posto===v?'active':''}" onclick="selectOpt('posto-opts','m1_posto','${v}',this)" title="${l}">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m1_posto" value="${d.m1_posto||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Qualificação Operacional <span class="required">*</span></label>
+        <div class="options-row" id="qual-opts">
+          ${quals.map(([v,l])=>`<button class="opt-btn-sm ${d.m1_qualificacao===v?'active':''}" onclick="selectOpt('qual-opts','m1_qualificacao','${v}',this)" title="${l}">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m1_qualificacao" value="${d.m1_qualificacao||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Horas totais de voo (todas as aeronaves) <span class="required">*</span></label>
+        <input type="number" id="m1_horas_total" min="0" placeholder="ex: 1250" value="${d.m1_horas_total||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Horas totais de voo na aeronave C-99 <span class="required">*</span></label>
+        <input type="number" id="m1_horas_c99" min="0" placeholder="ex: 450" value="${d.m1_horas_c99||''}">
+      </div>
+    </div>
+
+    ${backButton(mId)}
+    <button class="btn-primary" onclick="submitCaract('${mId}')">CONTINUAR →</button>
+    ${footer()}
+  </div>`);
+}
+
+function selectOpt(groupId, fieldId, val, btn) {
+  document.querySelectorAll(`#${groupId} .opt-btn-sm`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(fieldId).value = val;
+}
+
+function submitCaract(mId) {
+  const fields = ['m1_idade','m1_genero','m1_peso','m1_altura','m1_posto','m1_qualificacao','m1_horas_total','m1_horas_c99'];
+  const labels = { m1_idade:'Idade', m1_genero:'Gênero', m1_peso:'Peso', m1_altura:'Altura',
+    m1_posto:'Posto/Graduação', m1_qualificacao:'Qualificação Operacional',
+    m1_horas_total:'Horas totais de voo', m1_horas_c99:'Horas na C-99' };
+
+  for (const f of fields) {
+    const v = document.getElementById(f)?.value;
+    if (!v || v.trim() === '') { showToast(`Campo obrigatório: ${labels[f]}`); return; }
+    if (f === 'm1_idade' && (parseInt(v) < 18 || parseInt(v) > 70)) {
+      showToast('Idade deve ser entre 18 e 70 anos.'); return;
+    }
+  }
+  collectFormData(mId, fields);
+  advanceStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: IPAQ
+   ═══════════════════════════════════════════════════════ */
+function renderIPAQ(mId) {
+  const steps = STEPS[mId];
+  const stepIdx = STATE[mId].step;
+  const total = steps.length;
+  const d = STATE[mId].data;
+
+  const v = (k) => d[k] !== undefined ? d[k] : '';
+  const showSub = (key) => v(key) !== '' && v(key) !== '0' && v(key) !== 'nenhum';
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'IPAQ')}
+    <div class="section-title">IPAQ — ATIVIDADE FÍSICA</div>
+
+    <div class="info-box">
+      Estamos interessados nas atividades físicas dos <strong>últimos 7 dias</strong>. Responda mesmo que não se considere ativo. Considere apenas atividades de pelo menos <strong>10 minutos contínuos</strong>.
+      <br><br>
+      <strong>VIGOROSAS:</strong> grande esforço, respirar MUITO mais forte (correr, futebol, pedalar rápido, musculação pesada).<br>
+      <strong>MODERADAS:</strong> algum esforço, respirar UM POUCO mais forte (pedalar leve, nadar, dançar, tarefas domésticas).
+    </div>
+
+    <div class="card">
+      <div class="section-subtitle">SEÇÃO 1 — CAMINHADA</div>
+      <div class="field-group">
+        <label class="field-label">1a) Em quantos dias da última semana você CAMINHOU por pelo menos 10 minutos contínuos (transporte, lazer ou exercício)? <span class="required">*</span></label>
+        <div class="options-row" id="ipaq1a-opts">
+          ${['Nenhum','1','2','3','4','5','6','7'].map(v=>`<button class="opt-btn-sm ${d.m1_ipaq_1a===v?'active':''}" onclick="selectOpt('ipaq1a-opts','m1_ipaq_1a','${v}',this);ipaqToggle('ipaq1b','${v}')">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m1_ipaq_1a" value="${d.m1_ipaq_1a||''}">
+      </div>
+      <div id="ipaq1b" style="display:${showSub('m1_ipaq_1a')?'block':'none'}">
+        <div class="field-group">
+          <label class="field-label">1b) Nos dias em que caminhou, quanto tempo por dia? <span class="required">*</span></label>
+          <div class="input-row">
+            <div><label class="field-label">Horas</label><input type="number" id="m1_ipaq_1b_h" min="0" max="24" placeholder="horas" value="${v('m1_ipaq_1b_h')}"></div>
+            <div><label class="field-label">Minutos</label><input type="number" id="m1_ipaq_1b_m" min="0" max="59" placeholder="min" value="${v('m1_ipaq_1b_m')}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-subtitle">SEÇÃO 2 — ATIVIDADE MODERADA</div>
+      <div class="info-box" style="margin-bottom:12px">Não inclua caminhada</div>
+      <div class="field-group">
+        <label class="field-label">2a) Em quantos dias realizou atividades MODERADAS por pelo menos 10 minutos (pedalar leve, nadar, dançar, ginástica aeróbica leve, serviços domésticos)? <span class="required">*</span></label>
+        <div class="options-row" id="ipaq2a-opts">
+          ${['Nenhum','1','2','3','4','5','6','7'].map(v=>`<button class="opt-btn-sm ${d.m1_ipaq_2a===v?'active':''}" onclick="selectOpt('ipaq2a-opts','m1_ipaq_2a','${v}',this);ipaqToggle('ipaq2b','${v}')">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m1_ipaq_2a" value="${d.m1_ipaq_2a||''}">
+      </div>
+      <div id="ipaq2b" style="display:${showSub('m1_ipaq_2a')?'block':'none'}">
+        <div class="field-group">
+          <label class="field-label">2b) Quanto tempo por dia fez atividades moderadas? <span class="required">*</span></label>
+          <div class="input-row">
+            <div><label class="field-label">Horas</label><input type="number" id="m1_ipaq_2b_h" min="0" max="24" placeholder="horas" value="${v('m1_ipaq_2b_h')}"></div>
+            <div><label class="field-label">Minutos</label><input type="number" id="m1_ipaq_2b_m" min="0" max="59" placeholder="min" value="${v('m1_ipaq_2b_m')}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-subtitle">SEÇÃO 3 — ATIVIDADE VIGOROSA</div>
+      <div class="field-group">
+        <label class="field-label">3a) Em quantos dias realizou atividades VIGOROSAS por pelo menos 10 minutos (correr, futebol, pedalar rápido, basquete, ginástica aeróbica intensa, carregar pesos elevados)? <span class="required">*</span></label>
+        <div class="options-row" id="ipaq3a-opts">
+          ${['Nenhum','1','2','3','4','5','6','7'].map(v=>`<button class="opt-btn-sm ${d.m1_ipaq_3a===v?'active':''}" onclick="selectOpt('ipaq3a-opts','m1_ipaq_3a','${v}',this);ipaqToggle('ipaq3b','${v}')">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m1_ipaq_3a" value="${d.m1_ipaq_3a||''}">
+      </div>
+      <div id="ipaq3b" style="display:${showSub('m1_ipaq_3a')?'block':'none'}">
+        <div class="field-group">
+          <label class="field-label">3b) Quanto tempo por dia fez atividades vigorosas? <span class="required">*</span></label>
+          <div class="input-row">
+            <div><label class="field-label">Horas</label><input type="number" id="m1_ipaq_3b_h" min="0" max="24" placeholder="horas" value="${v('m1_ipaq_3b_h')}"></div>
+            <div><label class="field-label">Minutos</label><input type="number" id="m1_ipaq_3b_m" min="0" max="59" placeholder="min" value="${v('m1_ipaq_3b_m')}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-subtitle">SEÇÃO 4 — TEMPO SENTADO</div>
+      <div class="info-box" style="margin-bottom:12px">Inclui trabalho, estudo, descanso, TV, leitura. <strong>Não inclui</strong> transporte (ônibus, carro, metrô).</div>
+      <div class="field-group">
+        <label class="field-label">4a) Quanto tempo no total você gasta sentado durante um dia de <strong>semana</strong>? <span class="required">*</span></label>
+        <div class="input-row">
+          <div><label class="field-label">Horas</label><input type="number" id="m1_ipaq_4a_h" min="0" max="24" placeholder="horas" value="${v('m1_ipaq_4a_h')}"></div>
+          <div><label class="field-label">Minutos</label><input type="number" id="m1_ipaq_4a_m" min="0" max="59" placeholder="min" value="${v('m1_ipaq_4a_m')}"></div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">4b) Quanto tempo no total você gasta sentado durante um dia de <strong>final de semana</strong>? <span class="required">*</span></label>
+        <div class="input-row">
+          <div><label class="field-label">Horas</label><input type="number" id="m1_ipaq_4b_h" min="0" max="24" placeholder="horas" value="${v('m1_ipaq_4b_h')}"></div>
+          <div><label class="field-label">Minutos</label><input type="number" id="m1_ipaq_4b_m" min="0" max="59" placeholder="min" value="${v('m1_ipaq_4b_m')}"></div>
+        </div>
+      </div>
+    </div>
+
+    ${backButton(mId)}
+    <button class="btn-primary" onclick="submitIPAQ('${mId}')">CONTINUAR →</button>
+    ${footer()}
+  </div>`);
+}
+
+function ipaqToggle(blockId, val) {
+  const block = document.getElementById(blockId);
+  if (!block) return;
+  block.style.display = (val && val !== 'Nenhum' && val !== '0') ? 'block' : 'none';
+}
+
+function submitIPAQ(mId) {
+  const d = STATE[mId].data;
+  const fields = ['m1_ipaq_1a','m1_ipaq_2a','m1_ipaq_3a','m1_ipaq_4a_h','m1_ipaq_4a_m','m1_ipaq_4b_h','m1_ipaq_4b_m'];
+  const labels = {m1_ipaq_1a:'Seção 1 — dias caminhando',m1_ipaq_2a:'Seção 2 — dias moderado',m1_ipaq_3a:'Seção 3 — dias vigoroso',
+    m1_ipaq_4a_h:'Seção 4a — horas sentado (semana)',m1_ipaq_4a_m:'Seção 4a — minutos sentado (semana)',
+    m1_ipaq_4b_h:'Seção 4b — horas sentado (fim de semana)',m1_ipaq_4b_m:'Seção 4b — minutos sentado (fim de semana)'};
+
+  for (const f of ['m1_ipaq_1a','m1_ipaq_2a','m1_ipaq_3a']) {
+    const v = document.getElementById(f)?.value;
+    if (!v) { showToast(`Obrigatório: ${labels[f]}`); return; }
+  }
+
+  // Validar sub-campos quando dias > 0
+  const checkSub = (daysKey, hKey, mKey) => {
+    const days = document.getElementById(daysKey)?.value;
+    if (days && days !== 'Nenhum') {
+      const h = document.getElementById(hKey)?.value;
+      const m = document.getElementById(mKey)?.value;
+      if (!h && !m) { showToast(`Informe o tempo diário para ${labels[daysKey]}.`); return false; }
+    }
+    return true;
+  };
+  if (!checkSub('m1_ipaq_1a','m1_ipaq_1b_h','m1_ipaq_1b_m')) return;
+  if (!checkSub('m1_ipaq_2a','m1_ipaq_2b_h','m1_ipaq_2b_m')) return;
+  if (!checkSub('m1_ipaq_3a','m1_ipaq_3b_h','m1_ipaq_3b_m')) return;
+
+  const h4a = document.getElementById('m1_ipaq_4a_h')?.value;
+  const m4a = document.getElementById('m1_ipaq_4a_m')?.value;
+  if (!h4a && !m4a) { showToast('Obrigatório: Seção 4a — informe horas ou minutos sentado (semana)'); return; }
+
+  const h4b = document.getElementById('m1_ipaq_4b_h')?.value;
+  const m4b = document.getElementById('m1_ipaq_4b_m')?.value;
+  if (!h4b && !m4b) { showToast('Obrigatório: Seção 4b — informe horas ou minutos sentado (fim de semana)'); return; }
+
+  const allFields = ['m1_ipaq_1a','m1_ipaq_1b_h','m1_ipaq_1b_m',
+    'm1_ipaq_2a','m1_ipaq_2b_h','m1_ipaq_2b_m',
+    'm1_ipaq_3a','m1_ipaq_3b_h','m1_ipaq_3b_m',
+    'm1_ipaq_4a_h','m1_ipaq_4a_m','m1_ipaq_4b_h','m1_ipaq_4b_m'];
+  collectFormData(mId, allFields);
+  advanceStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: PRÉ-MISSÃO A
+   ═══════════════════════════════════════════════════════ */
+function collectPremissaoAFields(mId) {
+  const allFields = ['m2_funcao_bordo','m2_funcao_operacional','m2_horario_decolagem',
+    'm2_tempo_voo_previsto_h','m2_tempo_voo_previsto_m',
+    'm2_tempo_voo_total_missao_h','m2_tempo_voo_total_missao_m',
+    'm2_autoridades','m2_tipo_autoridade','m2_comitiva','m2_tipo_comitiva'];
+  collectFormData(mId, allFields);
+}
+function selectAutoridade(mId, val, btn) {
+  collectPremissaoAFields(mId);
+  STATE[mId].data.m2_autoridades = val;
+  if (val === 'Não') {
+    STATE[mId].data.m2_tipo_autoridade = '';
+  }
+  saveState();
+  renderPremissaoA(mId);
+}
+function selectComitiva(mId, val, btn) {
+  collectPremissaoAFields(mId);
+  STATE[mId].data.m2_comitiva = val;
+  if (val === 'Não') {
+    STATE[mId].data.m2_tipo_comitiva = '';
+  }
+  saveState();
+  renderPremissaoA(mId);
+}
+
+function renderPremissaoA(mId) {
+  const steps = STEPS[mId];
+  const stepIdx = STATE[mId].step;
+  const total = steps.length;
+  const d = STATE[mId].data;
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'PRÉ-MISSÃO')}
+    <div class="section-title">QUESTIONÁRIO PRÉ-MISSÃO</div>
+
+    <div class="card">
+      <div class="section-subtitle">BLOCO A — DADOS DA MISSÃO</div>
+
+      <div class="field-group">
+        <label class="field-label">Função a Bordo (nesta missão) <span class="required">*</span></label>
+        <div class="options-list" id="funcao-bordo-opts">
+          ${[['PIC','PIC — Piloto em Comando'],['SIC','SIC — Segundo em Comando']].map(([v,l])=>
+            `<button class="opt-btn ${d.m2_funcao_bordo===v?'active':''}" onclick="selectOpt('funcao-bordo-opts','m2_funcao_bordo','${v}',this)">${l}</button>`
+          ).join('')}
+        </div>
+        <input type="hidden" id="m2_funcao_bordo" value="${d.m2_funcao_bordo||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Função Operacional (nesta missão) <span class="required">*</span></label>
+        <div class="options-list" id="funcao-op-opts">
+          ${[['PF','PF — Pilot Flying'],['PM','PM — Pilot Monitoring']].map(([v,l])=>
+            `<button class="opt-btn ${d.m2_funcao_operacional===v?'active':''}" onclick="selectOpt('funcao-op-opts','m2_funcao_operacional','${v}',this)">${l}</button>`
+          ).join('')}
+        </div>
+        <input type="hidden" id="m2_funcao_operacional" value="${d.m2_funcao_operacional||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Horário previsto de decolagem (hora local) <span class="required">*</span></label>
+        <input type="time" id="m2_horario_decolagem" value="${d.m2_horario_decolagem||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Tempo de voo previsto para o primeiro trecho da missão <span class="required">*</span></label>
+        <div class="input-row">
+          <div><label class="field-label">Horas</label><input type="number" id="m2_tempo_voo_previsto_h" min="0" max="24" placeholder="horas" value="${d.m2_tempo_voo_previsto_h||''}"></div>
+          <div><label class="field-label">Minutos</label><input type="number" id="m2_tempo_voo_previsto_m" min="0" max="59" placeholder="min" value="${d.m2_tempo_voo_previsto_m||''}"></div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Tempo total de voo previsto na missão <span class="required">*</span></label>
+        <div class="input-row">
+          <div><label class="field-label">Horas</label><input type="number" id="m2_tempo_voo_total_missao_h" min="0" max="24" placeholder="horas" value="${d.m2_tempo_voo_total_missao_h||''}"></div>
+          <div><label class="field-label">Minutos</label><input type="number" id="m2_tempo_voo_total_missao_m" min="0" max="59" placeholder="min" value="${d.m2_tempo_voo_total_missao_m||''}"></div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Haverá autoridades a bordo? <span class="required">*</span></label>
+        <div class="options-row" id="autor-opts">
+          ${['Sim','Não'].map(v=>`<button class="opt-btn-sm ${d.m2_autoridades===v?'active':''}" onclick="selectAutoridade('${mId}','${v}',this)">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m2_autoridades" value="${d.m2_autoridades||''}">
+      </div>
+
+      ${d.m2_autoridades==='Sim' ? `
+      <div class="field-group">
+        <label class="field-label">Qual tipo de autoridade? <span class="required">*</span></label>
+        <div class="options-row" id="tipo-autor-opts">
+          ${['FAB','EB','MB','CIVIL'].map(v=>`<button class="opt-btn-sm ${d.m2_tipo_autoridade===v?'active':''}" onclick="selectOpt('tipo-autor-opts','m2_tipo_autoridade','${v}',this)">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m2_tipo_autoridade" value="${d.m2_tipo_autoridade||''}">
+      </div>
+      ` : ''}
+
+      <div class="field-group">
+        <label class="field-label">Haverá comitiva a bordo? <span class="required">*</span></label>
+        <div class="options-row" id="comit-opts">
+          ${['Sim','Não'].map(v=>`<button class="opt-btn-sm ${d.m2_comitiva===v?'active':''}" onclick="selectComitiva('${mId}','${v}',this)">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m2_comitiva" value="${d.m2_comitiva||''}">
+      </div>
+
+      ${d.m2_comitiva==='Sim' ? `
+      <div class="field-group">
+        <label class="field-label">Qual tipo de comitiva? <span class="required">*</span></label>
+        <div class="options-row" id="tipo-comit-opts">
+          ${['FAB','EB','MB','CIVIL'].map(v=>`<button class="opt-btn-sm ${d.m2_tipo_comitiva===v?'active':''}" onclick="selectOpt('tipo-comit-opts','m2_tipo_comitiva','${v}',this)">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m2_tipo_comitiva" value="${d.m2_tipo_comitiva||''}">
+      </div>
+      ` : ''}
+    </div>
+
+    ${backButton(mId)}
+    <button class="btn-primary" onclick="submitPremissaoA('${mId}')">CONTINUAR →</button>
+    ${footer()}
+  </div>`);
+}
+
+function submitPremissaoA(mId) {
+  const req = ['m2_funcao_bordo','m2_funcao_operacional','m2_horario_decolagem','m2_autoridades','m2_comitiva'];
+  const labels = {m2_funcao_bordo:'Função a Bordo',m2_funcao_operacional:'Função Operacional',
+    m2_horario_decolagem:'Horário de decolagem',m2_autoridades:'Autoridades a bordo',m2_comitiva:'Comitiva a bordo'};
+  for (const f of req) {
+    const v = document.getElementById(f)?.value;
+    if (!v || v.trim()==='') { showToast(`Obrigatório: ${labels[f]}`); return; }
+  }
+  if (document.getElementById('m2_autoridades')?.value === 'Sim') {
+    const tipoAutor = document.getElementById('m2_tipo_autoridade')?.value;
+    if (!tipoAutor || tipoAutor.trim()==='') { showToast('Obrigatório: Qual tipo de autoridade?'); return; }
+  }
+  if (document.getElementById('m2_comitiva')?.value === 'Sim') {
+    const tipoComit = document.getElementById('m2_tipo_comitiva')?.value;
+    if (!tipoComit || tipoComit.trim()==='') { showToast('Obrigatório: Qual tipo de comitiva?'); return; }
+  }
+  const h1 = document.getElementById('m2_tempo_voo_previsto_h')?.value;
+  const m1 = document.getElementById('m2_tempo_voo_previsto_m')?.value;
+  if ((!h1 || h1.trim()==='') && (!m1 || m1.trim()==='')) {
+    showToast('Obrigatório: Tempo de voo previsto para o primeiro trecho'); return;
+  }
+  const h2 = document.getElementById('m2_tempo_voo_total_missao_h')?.value;
+  const m2 = document.getElementById('m2_tempo_voo_total_missao_m')?.value;
+  if ((!h2 || h2.trim()==='') && (!m2 || m2.trim()==='')) {
+    showToast('Obrigatório: Tempo total de voo previsto na missão'); return;
+  }
+  let allFields = [...req, 'm2_tempo_voo_previsto_h', 'm2_tempo_voo_previsto_m', 'm2_tempo_voo_total_missao_h', 'm2_tempo_voo_total_missao_m'];
+  if (document.getElementById('m2_autoridades')?.value === 'Sim') {
+    allFields.push('m2_tipo_autoridade');
+  }
+  if (document.getElementById('m2_comitiva')?.value === 'Sim') {
+    allFields.push('m2_tipo_comitiva');
+  }
+  collectFormData(mId, allFields);
+  advanceStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: PRÉ-MISSÃO B
+   ═══════════════════════════════════════════════════════ */
+function renderPremissaoB(mId) {
+  const steps = STEPS[mId];
+  const stepIdx = STATE[mId].step;
+  const total = steps.length;
+  const d = STATE[mId].data;
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'PRÉ-MISSÃO')}
+    <div class="section-title">QUESTIONÁRIO PRÉ-MISSÃO</div>
+
+    <div class="card">
+      <div class="section-subtitle">BLOCO B — ESTADO NO MOMENTO DA COLETA</div>
+
+      <div class="field-group">
+        <label class="field-label">Na noite anterior a esta coleta, quantas horas você dormiu? <span class="required">*</span></label>
+        <input type="number" id="m2_sono_horas" min="0" max="24" step="0.5" placeholder="ex: 7" value="${d.m2_sono_horas||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Como você classificaria a qualidade do seu sono na noite anterior? <span class="required">*</span></label>
+        <div class="options-list" id="sono-qual-opts">
+          ${[['1','1 — Péssima'],['2','2 — Ruim'],['3','3 — Regular'],['4','4 — Boa'],['5','5 — Excelente']].map(([v,l])=>
+            `<button class="opt-btn ${d.m2_sono_qualidade===v?'active':''}" onclick="selectOpt('sono-qual-opts','m2_sono_qualidade','${v}',this)">${l}</button>`
+          ).join('')}
+        </div>
+        <input type="hidden" id="m2_sono_qualidade" value="${d.m2_sono_qualidade||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Seu nível de estresse/preocupação neste momento: <span class="required">*</span></label>
+        <div class="options-list" id="estresse-opts">
+          ${[['1','1 — Muito Baixo'],['2','2 — Baixo'],['3','3 — Moderado'],['4','4 — Alto'],['5','5 — Muito Alto']].map(([v,l])=>
+            `<button class="opt-btn ${d.m2_estresse===v?'active':''}" onclick="selectOpt('estresse-opts','m2_estresse','${v}',this)">${l}</button>`
+          ).join('')}
+        </div>
+        <input type="hidden" id="m2_estresse" value="${d.m2_estresse||''}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Nas últimas 12 horas, consumiu cafeína (café, chá, refrigerante, energético)? <span class="required">*</span></label>
+        <div class="options-row" id="cafe-opts">
+          ${['Sim','Não'].map(v=>`<button class="opt-btn-sm ${d.m2_cafeina===v?'active':''}" onclick="selectCafeina('${mId}','${v}',this)">${v}</button>`).join('')}
+        </div>
+        <input type="hidden" id="m2_cafeina" value="${d.m2_cafeina||''}">
+      </div>
+
+      ${d.m2_cafeina==='Sim' ? `
+      <div class="field-group">
+        <label class="field-label">Especifique (tipo e quantidade): <span class="required">*</span></label>
+        <input type="text" id="m2_cafeina_detalhe" placeholder="ex: 2 cafés às 06h" value="${d.m2_cafeina_detalhe||''}">
+      </div>
+      ` : ''}
+
+      ${d.m2_cafeina !== 'Sim' ? `
+      <div class="field-group">
+        <label class="field-label">Tempo de deslocamento casa → esquadrão hoje (minutos): <span class="required">*</span></label>
+        <input type="number" id="m2_deslocamento" min="0" max="360" placeholder="ex: 25" value="${d.m2_deslocamento||''}">
+      </div>
+      ` : ''}
+    </div>
+
+    ${d.m2_cafeina==='Sim' ? `
+    <div class="card card-amber" style="text-align:center;padding:24px 20px">
+      <div style="font-size:28px;margin-bottom:12px">⚠️</div>
+      <div style="font-family:var(--font-title);font-size:13px;color:var(--amber);letter-spacing:1px;margin-bottom:10px">PARTICIPAÇÃO SUSPENSA</div>
+      <p style="font-size:13px;line-height:1.6;color:var(--text)">
+        O consumo de cafeína nas últimas 12 horas compromete os dados da coleta fisiológica.<br><br>
+        <strong>Você não poderá prosseguir hoje.</strong><br>
+        Retorne após 12 horas do último consumo.
+      </p>
+    </div>
+    ` : ''}
+
+    ${backButton(mId)}
+    ${d.m2_cafeina !== 'Sim' ? `<button class="btn-primary" onclick="submitPremissaoB('${mId}')">CONTINUAR →</button>` : ''}
+    ${footer()}
+  </div>`);
+}
+
+function selectCafeina(mId, val, btn) {
+  collectFormData(mId, ['m2_sono_horas','m2_sono_qualidade','m2_estresse','m2_cafeina','m2_deslocamento']);
+  STATE[mId].data.m2_cafeina = val;
+  if (val === 'Não') STATE[mId].data.m2_cafeina_detalhe = '';
+  saveState();
+  renderPremissaoB(mId);
+}
+
+function submitPremissaoB(mId) {
+  const d = STATE[mId].data;
+  const req = ['m2_sono_horas','m2_sono_qualidade','m2_estresse','m2_cafeina','m2_deslocamento'];
+  const labels = {m2_sono_horas:'Horas de sono',m2_sono_qualidade:'Qualidade do sono',m2_estresse:'Nível de estresse',
+    m2_cafeina:'Consumo de cafeína',m2_deslocamento:'Tempo de deslocamento'};
+  for (const f of req) {
+    const v = document.getElementById(f)?.value;
+    if (!v || v.trim()==='') { showToast(`Obrigatório: ${labels[f]}`); return; }
+  }
+  if (document.getElementById('m2_cafeina')?.value === 'Sim') {
+    const det = document.getElementById('m2_cafeina_detalhe')?.value;
+    if (!det || det.trim() === '') { showToast('Especifique o consumo de cafeína.'); return; }
+    d['m2_cafeina_detalhe'] = det;
+  }
+  collectFormData(mId, req);
+  advanceStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: PAUSA VFC + PVT
+   ═══════════════════════════════════════════════════════ */
+function renderPausa(mId, stepIdx, total) {
+  const mNum = mId === 'm1' ? 1 : mId === 'm2' ? 2 : 3;
+  const tsKey = `${mId}_pausa_vfc_pvt_ts`;
+  STATE[mId].data[tsKey] = new Date().toISOString();
+  saveState();
+
+  setApp(`<div class="screen fade-in">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'PAUSA')}
+
+    <div style="text-align:center;padding:10px 0 20px">
+      <div class="pause-icon">⏸️</div>
+      <div class="pause-title">PAUSE O APP AGORA</div>
+      <div class="pause-subtitle">Realize os procedimentos abaixo em ordem<br>antes de continuar</div>
+    </div>
+
+    <div class="procedure-list">
+      <div class="procedure-item">
+        <div class="procedure-num">1</div>
+        <div>🫀 Coloque a cinta peitoral Polar H10 e abra o aplicativo Kubios</div>
+      </div>
+      <div class="procedure-item">
+        <div class="procedure-num">2</div>
+        <div>Aguarde 5 minutos em repouso. Inicie registro de VFC por 4 minutos</div>
+      </div>
+      <div class="procedure-item">
+        <div class="procedure-num">3</div>
+        <div>📱 Realize o Teste PVT no aplicativo específico</div>
+      </div>
+      <div class="procedure-item">
+        <div class="procedure-num">4</div>
+        <div>Retorne aqui e toque em REALIZEI A VFC E PVT</div>
+      </div>
+    </div>
+
+
+    <button class="btn-amber" onclick="advanceStep('${mId}')">✔ REALIZEI A VFC E PVT</button>
+    ${footer()}
+  </div>`);
+
+  startTimer(240);
+}
+
+let _timerInterval = null;
+function startTimer(seconds) {
+  if (_timerInterval) clearInterval(_timerInterval);
+  let remaining = seconds;
+  const total = seconds;
+  _timerInterval = setInterval(() => {
+    remaining--;
+    const disp = document.getElementById('timer-display');
+    const bar  = document.getElementById('timer-bar');
+    if (!disp) { clearInterval(_timerInterval); return; }
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
+    disp.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (bar) bar.style.width = `${(remaining / total) * 100}%`;
+    if (remaining <= 0) {
+      clearInterval(_timerInterval);
+      if (disp) disp.textContent = '00:00';
+      if (bar) bar.style.width = '0%';
+      showToast('✔ 4 minutos concluídos! Agora realize o PVT.');
+    }
+  }, 1000);
+}
+function resetTimer() { startTimer(240); }
+
+/* ═══════════════════════════════════════════════════════
+   STEP: KSS
+   ═══════════════════════════════════════════════════════ */
+function renderKSS(mId, stepIdx, total) {
+  const kssKey = mId + '_kss';
+  const d = STATE[mId].data;
+
+  const items = [
+    [1,'Extremamente Alerta'],
+    [2,'Muito Alerta'],
+    [3,'Em Alerta'],
+    [4,'Quase Alerta'],
+    [5,'Nem Alerta, nem sonolento'],
+    [6,'Alguns sinais de sonolência'],
+    [7,'Sonolento, mas sem esforço para manter-me acordado'],
+    [8,'Sonolento, mas algum esforço para manter-me acordado'],
+    [9,'Muito Sonolento, esforçando-me para ficar acordado, lutando contra o sono'],
+    [10,'Extremamente sonolento, não consegue manter-se acordado']
+  ];
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'KSS')}
+    <div class="section-title">KSS — SONOLÊNCIA</div>
+
+    <div class="info-box">
+      Use a escala abaixo para descrever seu nível de sonolência <strong>agora, neste exato momento</strong>.
+    </div>
+
+    <div class="card">
+      <div class="section-subtitle">KAROLINSKA SLEEPINESS SCALE</div>
+      <div class="scale-container" id="kss-opts">
+        ${items.map(([n,l])=>`
+          <div class="scale-item ${d[kssKey]==n?'active':''}" onclick="selectScale('kss-opts','${kssKey}',${n},this)">
+            <div class="scale-num">${n}</div>
+            <div class="scale-desc">${l}</div>
+          </div>`).join('')}
+      </div>
+      <input type="hidden" id="${kssKey}" value="${d[kssKey]||''}">
+    </div>
+
+    ${backButton(mId)}
+    <button class="btn-primary" onclick="submitScale('${mId}','${kssKey}','KSS')">CONTINUAR →</button>
+    ${footer()}
+  </div>`);
+}
+
+function selectScale(groupId, fieldId, val, el) {
+  document.querySelectorAll(`#${groupId} .scale-item`).forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(fieldId).value = val;
+}
+
+function submitScale(mId, fieldId, name) {
+  const v = document.getElementById(fieldId)?.value;
+  if (!v) { showToast(`Selecione uma opção na escala ${name}.`); return; }
+  STATE[mId].data[fieldId] = v;
+  saveState();
+  advanceStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: SPS
+   ═══════════════════════════════════════════════════════ */
+function renderSPS(mId, stepIdx, total) {
+  const spsKey = mId + '_sps';
+  const d = STATE[mId].data;
+
+  const items = [
+    [1,'Totalmente alerta, bem desperto, extremamente disposto.'],
+    [2,'Muito ativo, responsivo, mas não em nível máximo.'],
+    [3,'Bem, relativamente revigorado.'],
+    [4,'Um pouco cansado, não totalmente disposto.'],
+    [5,'Moderadamente cansado, enfraquecido.'],
+    [6,'Muito cansado, com dificuldade de concentração.'],
+    [7,'Completamente exausto, incapaz de trabalhar efetivamente.']
+  ];
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'SPS')}
+    <div class="section-title">SPS — FADIGA</div>
+
+    <div class="info-box">
+      Selecione a afirmação que melhor descreve como você se sente <strong>neste exato momento</strong>.
+    </div>
+
+    <div class="card">
+      <div class="section-subtitle">ESCALA SAMN-PERELLI</div>
+      <div class="scale-container" id="sps-opts">
+        ${items.map(([n,l])=>`
+          <div class="scale-item ${d[spsKey]==n?'active':''}" onclick="selectScale('sps-opts','${spsKey}',${n},this)">
+            <div class="scale-num">${n}</div>
+            <div class="scale-desc">${l}</div>
+          </div>`).join('')}
+      </div>
+      <input type="hidden" id="${spsKey}" value="${d[spsKey]||''}">
+    </div>
+
+    ${backButton(mId)}
+    <button class="btn-primary" onclick="submitScale('${mId}','${spsKey}','SPS')">CONTINUAR →</button>
+    ${footer()}
+  </div>`);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: NASA-TLX
+   ═══════════════════════════════════════════════════════ */
+function renderNASATLX(mId) {
+  const steps = STEPS[mId];
+  const stepIdx = STATE[mId].step;
+  const total = steps.length;
+  const d = STATE[mId].data;
+
+  const dims = [
+    { key:'m3_tlx_mental',    name:'DEMANDA MENTAL',
+      q:'Quanta atividade mental e perceptual foi necessária (pensar, decidir, calcular, memorizar, olhar, pesquisar)? Foi fácil ou estressante, simples ou complexo?',
+      left:'Extremamente Baixa', right:'Extremamente Alta' },
+    { key:'m3_tlx_fisica',    name:'DEMANDA FÍSICA',
+      q:'Quanta atividade física foi exigida (puxar, empurrar, controlar, ativar)? Foi fácil ou árduo, lento ou rápido?',
+      left:'Extremamente Baixa', right:'Extremamente Alta' },
+    { key:'m3_tlx_temporal',  name:'DEMANDA TEMPORAL',
+      q:'Quanta pressão de tempo foi sentida pela taxa ou ritmo das tarefas? Foi lento e folgado ou rápido e estressante?',
+      left:'Extremamente Baixa', right:'Extremamente Alta' },
+    { key:'m3_tlx_desempenho_raw', name:'DESEMPENHO',
+      q:'Quão bem-sucedido você se sente em cumprir os objetivos da tarefa? Quão satisfeito está com seu desempenho?',
+      left:'Falha Total', right:'Perfeito' },
+    { key:'m3_tlx_esforco',   name:'ESFORÇO',
+      q:'Quão duro você teve que trabalhar (mental e fisicamente) para atingir seu nível de desempenho?',
+      left:'Extremamente Baixo', right:'Extremamente Alto' },
+    { key:'m3_tlx_frustracao', name:'FRUSTRAÇÃO',
+      q:'Quão inseguro, desencorajado, irritado, estressado ou ansioso você se sentiu, em oposição a seguro, encorajado, satisfeito, calmo ou complacente?',
+      left:'Extremamente Baixa', right:'Extremamente Alta' }
+  ];
+
+  const dimHTML = dims.map(dim => {
+    const val = d[dim.key] || 10;
+    return `<div class="tlx-dimension">
+      <div class="tlx-dim-name">${dim.name}</div>
+      <div class="tlx-dim-question">${dim.q}</div>
+      <div class="tlx-scale-wrap">
+        <div class="tlx-poles"><span>${dim.left}</span><span>${dim.right}</span></div>
+        <input type="range" class="tlx-slider" id="${dim.key}" min="1" max="20" step="1"
+          value="${val}" oninput="updateTLX('${dim.key}')">
+        <div class="tlx-value-display" id="${dim.key}_disp">${val}</div>
+      </div>
+    </div>`;
+  }).join('<hr class="divider">');
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'NASA-TLX')}
+    <div class="section-title">NASA-TLX</div>
+
+    <div class="info-box">
+      A tarefa de <strong>pré-voo</strong> que você acabou de realizar pode ser caracterizada por seis fatores. Indique a quantidade de cada fator percebido, movendo o controle deslizante. Não há respostas certas ou erradas — seja o mais honesto possível.
+    </div>
+
+    <div class="card">
+      <div class="section-subtitle">AVALIAÇÃO DA CARGA DE TRABALHO — PRÉ-VOO</div>
+      ${dimHTML}
+    </div>
+
+    ${backButton(mId)}
+    <button class="btn-primary" onclick="submitNASATLX('${mId}')">CONTINUAR →</button>
+    ${footer()}
+  </div>`);
+}
+
+function updateTLX(key) {
+  const val = document.getElementById(key)?.value;
+  const disp = document.getElementById(key + '_disp');
+  if (disp) disp.textContent = val;
+}
+
+function submitNASATLX(mId) {
+  const dims = ['m3_tlx_mental','m3_tlx_fisica','m3_tlx_temporal','m3_tlx_desempenho_raw','m3_tlx_esforco','m3_tlx_frustracao'];
+  const d = STATE[mId].data;
+  dims.forEach(k => {
+    const v = parseInt(document.getElementById(k)?.value || 10);
+    d[k] = v;
+  });
+  // Converter DESEMPENHO: maiores valores = melhor desempenho
+  d['m3_tlx_desempenho'] = 21 - d['m3_tlx_desempenho_raw'];
+  saveState();
+  advanceStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP: OBSERVAÇÕES
+   ═══════════════════════════════════════════════════════ */
+function renderObs(mId, stepIdx, total) {
+  const obsKey = mId + '_obs';
+  const d = STATE[mId].data;
+
+  setApp(`<div class="screen slide-up">
+    ${header()}
+    ${progressBar(stepIdx+1, total, 'OBSERVAÇÕES')}
+    <div class="section-title">OBSERVAÇÕES</div>
+
+    <div class="card">
+      <div class="section-subtitle">CAMPO LIVRE — OPCIONAL</div>
+      <div class="field-group">
+        <label class="field-label">Alguma observação sobre esta coleta?</label>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px;font-style:italic">
+          Ex: situação atípica, mal-estar, intercorrência no pré-voo, problema técnico...
+        </p>
+        <textarea id="${obsKey}" rows="5" placeholder="Digite aqui (opcional)...">${d[obsKey]||''}</textarea>
+      </div>
+    </div>
+
+    ${backButton(mId)}
+    <button class="btn-primary" onclick="submitObs('${mId}','${obsKey}')">CONCLUIR MOMENTO →</button>
+    ${footer()}
+  </div>`);
+}
+
+function submitObs(mId, obsKey) {
+  const v = document.getElementById(obsKey)?.value || '';
+  STATE[mId].data[obsKey] = v;
+  saveState();
+  advanceStep(mId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CONCLUSÃO DO MOMENTO
+   ═══════════════════════════════════════════════════════ */
+function completeMoment(mId) {
+  STATE[mId].status = 'done';
+  STATE[mId].step = STEPS[mId].length;
+  STATE[mId].endTs = new Date().toISOString();
+  saveState();
+
+  const mNum = mId === 'm1' ? 1 : mId === 'm2' ? 2 : 3;
+  const nextMsg = {
+    m1: 'Quando chegar o dia do voo, acesse o Momento 2 <strong>antes</strong> de iniciar o pré-voo.',
+    m2: 'Após concluir o pré-voo e <strong>antes de acionar os motores</strong>, acesse o Momento 3.',
+    m3: 'Você completou todos os 3 momentos. Muito obrigado pela sua participação nesta pesquisa!'
+  };
+
+  sendToSheets(mId);
+
+  setApp(`<div class="screen fade-in">
+    ${header()}
+    <div class="success-icon">✅</div>
+    <div class="success-title">MOMENTO ${mNum} CONCLUÍDO</div>
+    <div class="success-msg">${nextMsg[mId]}</div>
+
+    ${mId === 'm3' ? `
+    <div class="card" style="text-align:center;border-color:rgba(0,255,136,0.4)">
+      <div style="font-size:32px;margin-bottom:12px">🎖️</div>
+      <div class="section-title" style="justify-content:center">MISSÃO COMPLETA</div>
+      <p style="font-size:13px;color:var(--text-dim);line-height:1.6">
+        Sua contribuição é valiosa para a segurança operacional da FAB.<br>
+        <strong style="color:var(--green)">Bom voo!</strong>
+      </p>
+    </div>` : ''}
+
+    <button class="btn-primary" onclick="renderHome()">← VOLTAR AO PAINEL</button>
+    ${footer()}
+  </div>`);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ENVIO AO GOOGLE SHEETS
+   ═══════════════════════════════════════════════════════ */
+function buildPayload(mId) {
+  const d = STATE[mId].data;
+  const base = {
+    token: TOKEN,
+    codigo_participante: PARTICIPANT,
+    momento: mId.toUpperCase(),
+    timestamp_inicio: STATE[mId].startTs,
+    timestamp_fim:    STATE[mId].endTs
+  };
+  return Object.assign(base, d);
+}
+
+async function sendToSheets(mId) {
+  if (!SHEETS_URL || SHEETS_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return;
+
+  const payload = buildPayload(mId);
+  const pendingKey = `fadiga_${TOKEN}_pending_${mId}`;
+
+  try {
+    const resp = await fetch(SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    localStorage.removeItem(pendingKey);
+  } catch(err) {
+    localStorage.setItem(pendingKey, JSON.stringify(payload));
+    showToast('📡 Sem conexão — dados salvos localmente. Serão enviados ao reconectar.');
+  }
+}
+
+async function retryPending() {
+  if (!SHEETS_URL || SHEETS_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return;
+  for (const mId of ['m1','m2','m3']) {
+    const pendingKey = `fadiga_${TOKEN}_pending_${mId}`;
+    const raw = localStorage.getItem(pendingKey);
+    if (!raw) continue;
+    try {
+      await fetch(SHEETS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: raw
+      });
+      localStorage.removeItem(pendingKey);
+      showToast('✔ Dados enviados com sucesso!');
+    } catch(_) {}
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   OFFLINE DETECTION
+   ═══════════════════════════════════════════════════════ */
+function updateOfflineBanner() {
+  document.getElementById('offline-banner').style.display = navigator.onLine ? 'none' : 'block';
+  if (navigator.onLine) retryPending();
+}
+window.addEventListener('online',  updateOfflineBanner);
+window.addEventListener('offline', updateOfflineBanner);
+
+/* ═══════════════════════════════════════════════════════
+   SERVICE WORKER
+   ═══════════════════════════════════════════════════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .catch(err => console.warn('SW:', err));
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  updateOfflineBanner();
+  boot();
+});
+</script>
+</body>
+</html>
