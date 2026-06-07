@@ -33,24 +33,18 @@ const COLUNAS = [
   'm1_qualificacao',
   'm1_horas_total',
   'm1_horas_c99',
-  // IPAQ
-  'm1_ipaq_1a',
-  'm1_ipaq_1b_h',
-  'm1_ipaq_1b_m',
-  'm1_ipaq_2a',
-  'm1_ipaq_2b_h',
-  'm1_ipaq_2b_m',
-  'm1_ipaq_3a',
-  'm1_ipaq_3b_h',
-  'm1_ipaq_3b_m',
-  'm1_ipaq_4a_h',
-  'm1_ipaq_4a_m',
-  'm1_ipaq_4b_h',
-  'm1_ipaq_4b_m',
+  // IPAQ — dias e tempos (HH:MM)
+  'm1_ipaq_caminhada_dias',
+  'm1_ipaq_caminhada_tempo',
+  'm1_ipaq_moderada_dias',
+  'm1_ipaq_moderada_tempo',
+  'm1_ipaq_vigorosa_dias',
+  'm1_ipaq_vigorosa_tempo',
+  'm1_ipaq_sentado_semana',
+  'm1_ipaq_sentado_fds',
   // Escalas
   'm1_kss',
   'm1_sps',
-  'm1_obs',
 
   // ── MOMENTO 2: Antes do Pré-Voo ────────────────────────────
   'm2_timestamp_inicio',
@@ -75,12 +69,11 @@ const COLUNAS = [
   // Escalas
   'm2_kss',
   'm2_sps',
-  'm2_obs',
 
   // ── MOMENTO 3: Após o Pré-Voo ──────────────────────────────
   'm3_timestamp_inicio',
   'm3_timestamp_fim',
-  // NASA-TLX
+  // NASA-TLX (escala 0–20)
   'm3_tlx_mental',
   'm3_tlx_fisica',
   'm3_tlx_temporal',
@@ -91,7 +84,6 @@ const COLUNAS = [
   // Escalas
   'm3_kss',
   'm3_sps',
-  'm3_obs',
 ];
 
 function doPost(e) {
@@ -155,8 +147,7 @@ function doPost(e) {
       } else if (col === `${mId}_timestamp_fim`) {
         valor = data.timestamp_fim || '';
       } else if (col.startsWith(prefixo)) {
-        // campo do momento atual: pegar do payload (sem o prefixo)
-        const campo = col; // ex: 'm1_idade' — já está no payload com esse nome
+        const campo = col;
         valor = (data[campo] !== undefined && data[campo] !== null) ? data[campo] : '';
       } else {
         return; // campo de outro momento: não sobrescrever
