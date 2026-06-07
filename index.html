@@ -1416,18 +1416,12 @@ function renderPremissaoA(mId) {
 
       <div class="field-group">
         <label class="field-label">Tempo de voo previsto para o primeiro trecho da missão <span class="required">*</span></label>
-        <div class="input-row">
-          <div><label class="field-label">Horas</label><input type="number" id="m2_tempo_voo_previsto_h" min="0" max="24" placeholder="horas" value="${d.m2_tempo_voo_previsto_h||''}"></div>
-          <div><label class="field-label">Minutos</label><input type="number" id="m2_tempo_voo_previsto_m" min="0" max="59" placeholder="min" value="${d.m2_tempo_voo_previsto_m||''}"></div>
-        </div>
+        <input type="time" id="m2_tempo_voo_previsto" value="${d.m2_tempo_voo_previsto||''}">
       </div>
 
       <div class="field-group">
         <label class="field-label">Tempo total de voo previsto na missão <span class="required">*</span></label>
-        <div class="input-row">
-          <div><label class="field-label">Horas</label><input type="number" id="m2_tempo_voo_total_missao_h" min="0" max="24" placeholder="horas" value="${d.m2_tempo_voo_total_missao_h||''}"></div>
-          <div><label class="field-label">Minutos</label><input type="number" id="m2_tempo_voo_total_missao_m" min="0" max="59" placeholder="min" value="${d.m2_tempo_voo_total_missao_m||''}"></div>
-        </div>
+        <input type="time" id="m2_tempo_voo_total_missao" value="${d.m2_tempo_voo_total_missao||''}">
       </div>
 
       <div class="field-group">
@@ -1489,17 +1483,13 @@ function submitPremissaoA(mId) {
     const tipoComit = document.getElementById('m2_tipo_comitiva')?.value;
     if (!tipoComit || tipoComit.trim()==='') { showToast('Obrigatório: Qual tipo de comitiva?'); return; }
   }
-  const h1 = document.getElementById('m2_tempo_voo_previsto_h')?.value;
-  const m1 = document.getElementById('m2_tempo_voo_previsto_m')?.value;
-  if ((!h1 || h1.trim()==='') && (!m1 || m1.trim()==='')) {
+  if (!document.getElementById('m2_tempo_voo_previsto')?.value) {
     showToast('Obrigatório: Tempo de voo previsto para o primeiro trecho'); return;
   }
-  const h2 = document.getElementById('m2_tempo_voo_total_missao_h')?.value;
-  const m2 = document.getElementById('m2_tempo_voo_total_missao_m')?.value;
-  if ((!h2 || h2.trim()==='') && (!m2 || m2.trim()==='')) {
+  if (!document.getElementById('m2_tempo_voo_total_missao')?.value) {
     showToast('Obrigatório: Tempo total de voo previsto na missão'); return;
   }
-  let allFields = [...req, 'm2_tempo_voo_previsto_h', 'm2_tempo_voo_previsto_m', 'm2_tempo_voo_total_missao_h', 'm2_tempo_voo_total_missao_m'];
+  let allFields = [...req, 'm2_tempo_voo_previsto', 'm2_tempo_voo_total_missao'];
   if (document.getElementById('m2_autoridades')?.value === 'Sim') {
     allFields.push('m2_tipo_autoridade');
   }
