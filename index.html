@@ -1865,7 +1865,7 @@ function submitNASATLX(mId) {
     d[k] = v;
   });
   // Converter DESEMPENHO: maiores valores = melhor desempenho
-  d['m3_tlx_desempenho'] = 21 - d['m3_tlx_desempenho_raw'];
+  d['m3_tlx_desempenho'] = d['m3_tlx_desempenho_raw'];
   delete d['m3_tlx_desempenho_raw'];
   saveState();
   advanceStep(mId);
