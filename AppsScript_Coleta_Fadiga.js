@@ -77,7 +77,6 @@ const COLUNAS = [
   'm3_tlx_mental',
   'm3_tlx_fisica',
   'm3_tlx_temporal',
-  'm3_tlx_desempenho_raw',
   'm3_tlx_desempenho',
   'm3_tlx_esforco',
   'm3_tlx_frustracao',
